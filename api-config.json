@@ -1,0 +1,65 @@
+{
+  "entities": [
+    {
+      "name": "User",
+      "routes": true,
+      "controller": true,
+      "service": true,
+      "types": true,
+      "fields": {
+        "id": "string",
+        "name": "string",
+        "email": "string",
+        "password": "string",
+        "role": "string",
+        "createdAt": "date"
+      }
+    },
+    {
+      "name": "Project",
+      "routes": true,
+      "controller": true,
+      "service": true,
+      "types": true,
+      "fields": {
+        "id": "string",
+        "title": "string",
+        "description": "string",
+        "ownerId": "string",
+        "status": "string"
+      }
+    },
+    {
+      "name": "Task",
+      "routes": true,
+      "controller": true,
+      "service": true,
+      "types": true,
+      "fields": {
+        "id": "string",
+        "title": "string",
+        "description": "string",
+        "projectId": "string",
+        "assigneeId": "string",
+        "status": "string",
+        "priority": "string"
+      }
+    }
+  ],
+  "config": {
+    "db": "PostgreSQL",
+    "auth": "JWT",
+    "useSwagger": true
+  },
+  "config": {
+    "db": "dynamodb",
+    "auth": "cognito",
+    "useSwagger": true
+  },
+  "utils": {
+    "logger": true,
+    "errorHandler": true,
+    "authMiddleware": true
+  }
+}
+
