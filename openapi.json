@@ -1,0 +1,199 @@
+{
+  "openapi": "3.0.3",
+  "info": {
+    "title": "Node.js TypeScript API",
+    "version": "1.0.0",
+    "description": "CRUD API for User Management with AWS Cognito authentication and API Key support"
+  },
+  "paths": {
+    "/users": {
+      "get": {
+        "summary": "Get all users",
+        "tags": ["Users"],
+        "security": [
+          { "cognitoAuth": [] },
+          { "apiKeyAuth": [] }
+        ],
+        "responses": {
+          "200": {
+            "description": "List of users",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": { "$ref": "#/components/schemas/User" }
+                }
+              }
+            }
+          },
+          "401": { "description": "Unauthorized" }
+        }
+      },
+      "post": {
+        "summary": "Create a new user",
+        "tags": ["Users"],
+        "security": [
+          { "cognitoAuth": [] },
+          { "apiKeyAuth": [] }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": { "$ref": "#/components/schemas/User" }
+            }
+          }
+        },
+        "responses": {
+          "201": { "description": "User created" },
+          "401": { "description": "Unauthorized" }
+        }
+      }
+    },
+    "/auth/login": {
+      "post": {
+        "summary": "User login with Cognito",
+        "tags": ["Auth"],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "username": { "type": "string", "example": "john@example.com" },
+                  "password": { "type": "string", "example": "SuperSecret123!" }
+                },
+                "required": ["username", "password"]
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Login successful",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": { "accessToken": { "type": "string" } }
+                }
+              }
+            }
+          },
+          "401": { "description": "Invalid credentials" }
+        }
+      }
+    },
+    "/auth/api-key": {
+      "post": {
+        "summary": "Generate an API Key",
+        "tags": ["Auth"],
+        "security": [
+          { "cognitoAuth": [] }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "name": { "type": "string", "example": "My App API Key" }
+                },
+                "required": ["name"]
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "API Key generated",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": { "apiKey": { "type": "string", "example": "123abc456xyz" } }
+                }
+              }
+            }
+          },
+          "401": { "description": "Unauthorized" }
+        }
+      },
+      "delete": {
+        "summary": "Revoke an API Key",
+        "tags": ["Auth"],
+        "security": [
+          { "cognitoAuth": [] }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "apiKey": { "type": "string", "example": "123abc456xyz" }
+                },
+                "required": ["apiKey"]
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": { "description": "API Key revoked" },
+          "401": { "description": "Unauthorized" }
+        }
+      }
+    },
+    "/auth/oauth/google": {
+      "get": {
+        "summary": "Google OAuth Login",
+        "tags": ["Auth"],
+        "description": "Redirects user to Google authentication flow",
+        "responses": {
+          "302": { "description": "Redirect to Google OAuth" }
+        }
+      }
+    },
+    "/auth/oauth/github": {
+      "get": {
+        "summary": "GitHub OAuth Login",
+        "tags": ["Auth"],
+        "description": "Redirects user to GitHub authentication flow",
+        "responses": {
+          "302": { "description": "Redirect to GitHub OAuth" }
+        }
+      }
+    }
+  },
+  "components": {
+    "schemas": {
+      "User": {
+        "type": "object",
+        "properties": {
+          "id": { "type": "string", "example": "1" },
+          "name": { "type": "string", "example": "John Doe" },
+          "email": { "type": "string", "example": "john@example.com" },
+          "role": { "type": "string", "example": "admin" }
+        },
+        "required": ["id", "name", "email"]
+      }
+    },
+    "securitySchemes": {
+      "cognitoAuth": {
+        "type": "http",
+        "scheme": "bearer",
+        "bearerFormat": "JWT",
+        "description": "Enter a valid AWS Cognito JWT token"
+      },
+      "apiKeyAuth": {
+        "type": "apiKey",
+        "in": "header",
+        "name": "X-API-KEY",
+        "description": "Enter a valid API Key to access protected endpoints"
+      }
+    }
+  }
+}
